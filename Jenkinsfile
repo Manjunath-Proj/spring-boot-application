@@ -58,5 +58,21 @@ pipeline {
                 }
             }
         }
+        stage('Build docker image'){
+            steps{
+                script{
+                    sh 'docker build -t dewdropsmk/springboot:v1 .'
+                    sh 'docker images'
+                }
+            }
+        }
+        stage('Docker login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Dockerlogin', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    sh "echo $PASS | docker login -u $USER --password-stdin"
+                    sh 'docker push dewdropsmk/springboot:v1'
+                }
+            }
+        }
     }
 }
